@@ -132,14 +132,17 @@
         });
 
         const json = await res.json();
+
+        // ✅ Ocultar formulario y mostrar mensaje de éxito
         document.querySelector(".formulario").style.display = "none";
         document.getElementById("mensaje").style.display = "block";
+
         console.log("Respuesta del servidor:", json);
       } catch (error) {
-        console.error("Error al guardar los datos", error);
+        console.error("❌ Error al guardar los datos:", error);
+        alert("Ocurrió un error al enviar el formulario. Intenta de nuevo.");
       }
     }
   </script>
 </body>
 </html>
-
