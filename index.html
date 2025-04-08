@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de Contratos - Grow</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    label, select, input { display: block; margin-bottom: 10px; width: 100%; padding: 8px; }
+    canvas { border: 1px solid #ccc; margin-top: 10px; width: 100%; height: 150px; touch-action: none; }
+    .formulario { max-width: 600px; margin: auto; }
+    button { margin-top: 15px; padding: 10px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Generador de Contratos - Grow Solutions</h1>
+  <div class="formulario">
+    <label>Tipo de contrato:</label>
+    <select id="tipo">
+      <option>Integral</option>
+      <option>SGSST</option>
+      <option>SGIRS</option>
+      <option>Habeas Data</option>
+      <option>SGSST y SGIRS</option>
+      <option>SGSST y Habeas Data</option>
+      <option>SGIRS y Habeas Data</option>
+      <option>SGSST, SGIRS y Habeas Data</option>
+    </select>
+
+    <label>Nombre del conjunto o empresa:</label>
+    <input type="text" id="propiedad" required />
+
+    <label>Dirección:</label>
+    <input type="text" id="direccion" required />
+
+    <label>NIT:</label>
+    <input type="text" id="nit" required />
+
+    <label>Representante legal:</label>
+    <input type="text" id="representante" required />
+
+    <label>Firma del cliente:</label>
+    <canvas id="canvas"></canvas>
+    <button type="button" onclick="limpiarFirma()">Limpiar firma</button>
+
+    <button type="button" onclick="guardarDatos()">Guardar</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let dibujando = false;
+
+    // Compatibilidad para mouse y táctil
+    function getPosition(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top
+        };
+      } else {
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+    }
+
+    canvas.addEventListener("mousedown", () => dibujando = true);
+    canvas.addEventListener("mouseup", () => dibujando = false);
+    canvas.addEventListener("mousemove", (e) => {
+      if (!dibujando) return;
+      const pos = getPosition(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener("touchstart", (e) => {
+      dibujando = true;
+      const pos = getPosition(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    });
+
+    canvas.addEventListener("touchend", () => dibujando = false);
+
+    canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      if (!dibujando) return;
+      const pos = getPosition(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    });
+
+    function limpiarFirma() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    async function guardarDatos() {
+      const tipo = document.getElementById("tipo").value;
+      const propiedad = document.getElementById("propiedad").value;
+      const direccion = document.getElementById("direccion").value;
+      const nit = document.getElementById("nit").value;
+      const representante = document.getElementById("representante").value;
+      const firma = canvas.toDataURL("image/png");
+
+      try {
+        const res = await fetch("http://localhost:3000/formulario", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tipo,
+            propiedad,
+            direccion,
+            nit,
+            representante,
+            firma
+          })
+        });
+
+        const json = await res.json();
+        alert("✅ Datos guardados correctamente");
+        console.log("Respuesta del servidor:", json);
+      } catch (error) {
+        alert("❌ Error al guardar los datos");
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
+
+
