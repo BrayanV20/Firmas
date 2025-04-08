@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,6 +10,16 @@
     canvas { border: 1px solid #ccc; margin-top: 10px; width: 100%; height: 150px; touch-action: none; }
     .formulario { max-width: 600px; margin: auto; }
     button { margin-top: 15px; padding: 10px; width: 100%; }
+    #mensaje {
+      display: none;
+      background: #d4edda;
+      color: #155724;
+      padding: 12px;
+      margin-top: 20px;
+      border: 1px solid #c3e6cb;
+      border-radius: 5px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -45,6 +54,8 @@
     <button type="button" onclick="limpiarFirma()">Limpiar firma</button>
 
     <button type="button" onclick="guardarDatos()">Guardar</button>
+
+    <div id="mensaje">✅ ¡Datos guardados correctamente!</div>
   </div>
 
   <script>
@@ -52,7 +63,6 @@
     const ctx = canvas.getContext("2d");
     let dibujando = false;
 
-    // Compatibilidad para mouse y táctil
     function getPosition(e) {
       const rect = canvas.getBoundingClientRect();
       if (e.touches) {
@@ -121,7 +131,7 @@
         });
 
         const json = await res.json();
-        alert("✅ Datos guardados correctamente");
+        document.getElementById("mensaje").style.display = "block";
         console.log("Respuesta del servidor:", json);
       } catch (error) {
         alert("❌ Error al guardar los datos");
@@ -131,134 +141,3 @@
   </script>
 </body>
 </html>
-
-
-=======
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Contratos - Grow</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.plugin.autotable.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 30px; }
-    label, select, input { display: block; margin-bottom: 10px; }
-    canvas { border: 1px solid #ccc; margin-top: 10px; }
-    .formulario { max-width: 600px; }
-    button { margin-top: 15px; }
-  </style>
-</head>
-<body>
-  <h1>Generador de Contratos - Grow Solutions</h1>
-  <div class="formulario" id="formulario">
-    <label>Tipo de contrato:</label>
-    <select id="tipo">
-      <option>Integral</option>
-      <option>SGSST</option>
-      <option>SGIRS</option>
-      <option>Habeas Data</option>
-      <option>SGSST y SGIRS</option>
-      <option>SGSST y Habeas Data</option>
-      <option>SGIRS y Habeas Data</option>
-      <option>SGSST, SGIRS y Habeas Data</option>
-    </select>
-
-    <label>Nombre del conjunto o empresa:</label>
-    <input type="text" id="propiedad" />
-
-    <label>Dirección:</label>
-    <input type="text" id="direccion" />
-
-    <label>NIT:</label>
-    <input type="text" id="nit" />
-
-    <label>Representante legal:</label>
-    <input type="text" id="representante" />
-
-    <label>Firma del cliente:</label>
-    <canvas id="canvas" width="300" height="100"></canvas>
-    <button type="button" onclick="limpiarFirma()">Limpiar firma</button>
-
-    <button type="button" onclick="generarContrato()">Generar contrato PDF y Enviar</button>
-  </div>
-
-  <script>
-    const { jsPDF } = window.jspdf;
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    let dibujando = false;
-
-    canvas.addEventListener("mousedown", () => dibujando = true);
-    canvas.addEventListener("mouseup", () => dibujando = false);
-    canvas.addEventListener("mousemove", (e) => {
-      if (dibujando) {
-        const rect = canvas.getBoundingClientRect();
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctx.stroke();
-      } else {
-        ctx.beginPath();
-      }
-    });
-
-    function limpiarFirma() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    async function generarContrato() {
-      const tipo = document.getElementById("tipo").value;
-      const propiedad = document.getElementById("propiedad").value;
-      const direccion = document.getElementById("direccion").value;
-      const nit = document.getElementById("nit").value;
-      const representante = document.getElementById("representante").value;
-
-      const response = await fetch("plantilla_contrato_base.txt");
-      let plantilla = await response.text();
-
-      plantilla = plantilla
-        .replace(/__PROPIEDAD__/g, propiedad)
-        .replace(/__DIRECCION__/g, direccion)
-        .replace(/__NIT__/g, nit)
-        .replace(/__REPRESENTANTE__/g, representante)
-        .replace(/__TIPO__/g, tipo);
-
-      const doc = new jsPDF({ unit: "mm", format: "letter" });
-      const lines = doc.splitTextToSize(plantilla, 180);
-      doc.text(lines, 15, 20);
-
-      const imgData = canvas.toDataURL("image/png");
-      doc.addImage(imgData, "PNG", 15, 250, 50, 20);
-
-      // Guardar PDF
-      doc.save(`Contrato_${tipo.replace(/\s+/g, "_")}_${propiedad.replace(/\s+/g, "_")}.pdf`);
-
-      // 🔥 Enviar datos al backend
-      try {
-        const res = await fetch("http://localhost:3000/formulario", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            tipo,
-            propiedad,
-            direccion,
-            nit,
-            representante
-          })
-        });
-
-        const json = await res.json();
-        alert("✅ Contrato generado y datos enviados correctamente");
-        console.log("Servidor:", json);
-      } catch (error) {
-        alert("❌ Error al enviar los datos al servidor");
-        console.error(error);
-      }
-    }
-  </script>
-</body>
-</html>
-
-
-
->>>>>>> 08447374348a41c42726bf77c3c6c6526087d566
