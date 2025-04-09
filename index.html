@@ -58,7 +58,7 @@
     <button type="button" onclick="guardarDatos()">Guardar</button>
   </div>
 
-  <div id="mensaje">✅ ¡Tus datos se guardaron satisfactoriamente!</div>
+  <div id="mensaje">✅ ¡Tus datos se guardaron y fueron enviados por correo!</div>
 
   <script>
     const canvas = document.getElementById("canvas");
@@ -118,7 +118,7 @@
       const firma = canvas.toDataURL("image/png");
 
       try {
-        const res = await fetch("https://grow-backend-eosin.vercel.app/api/formulario", {
+        const res = await fetch("https://grow-backend-eosin.vercel.app/api/enviarContrato", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -133,14 +133,13 @@
 
         const json = await res.json();
 
-        // ✅ Ocultar formulario y mostrar mensaje de éxito
         document.querySelector(".formulario").style.display = "none";
         document.getElementById("mensaje").style.display = "block";
 
-        console.log("✔ Datos enviados:", json);
+        console.log("✔ Contrato enviado:", json);
       } catch (error) {
-        console.error("❌ Error al guardar los datos:", error);
-        alert("Ocurrió un error al enviar el formulario. Intenta de nuevo.");
+        console.error("❌ Error al enviar el contrato:", error);
+        alert("Hubo un error al enviar el contrato. Intenta de nuevo.");
       }
     }
   </script>
