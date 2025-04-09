@@ -5,11 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generador de Contratos - Grow</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 30px; }
-    label, select, input { display: block; margin-bottom: 10px; width: 100%; padding: 8px; }
-    canvas { border: 1px solid #ccc; margin-top: 10px; width: 100%; height: 150px; touch-action: none; }
-    .formulario { max-width: 600px; margin: auto; }
-    button { margin-top: 15px; padding: 10px; width: 100%; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header-logo img {
+      height: 100px;
+    }
+
+    label, select, input {
+      display: block;
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 8px;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      width: 100%;
+      height: 150px;
+      touch-action: none;
+    }
+
+    .formulario {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+    }
+
     #mensaje {
       display: none;
       background: #28a745;
@@ -21,20 +63,33 @@
       text-align: center;
       font-size: 16px;
     }
-    .header-logo {
-      text-align: right;
-      margin-bottom: 20px;
-    }
-    .header-logo img {
-      height: 80px;
+
+    /* ✅ Media Query para celulares */
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .header-logo img {
+        height: 70px;
+        margin-top: 10px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Generador de Contratos - Grow Solutions</h1>
-
-  <div class="header-logo">
-    <img src="Logo-Grow.png" alt="Logo Grow" />
+  <div class="header">
+    <h1>Generador de Contratos - Grow Solutions</h1>
+    <div class="header-logo">
+      <img src="Logo-Grow.png" alt="Logo Grow" />
+    </div>
   </div>
 
   <div class="formulario">
